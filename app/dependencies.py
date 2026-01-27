@@ -11,33 +11,31 @@ from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
+credentials_exception = HTTPException(
+    status_code=401,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"}
+)
+
 async def get_db():
     async with AsyncSessionLocal() as db:
         yield db
 
 
-async def get_token(request: Request, token: str = Depends(oauth2_scheme)) -> str:
-    if token:
-        return token
+async def get_token_from_header_or_cookie(request: Request) -> str:
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header[7:]
 
     cookie_token = request.cookies.get("access_token")
     if cookie_token:
         return cookie_token
 
-    raise HTTPException(
-        status_code=401,
-        detail="Not authenticated",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    raise credentials_exception
 
 
 async def get_current_user(db: AsyncSession = Depends(get_db),
-                           token: str = Depends(get_token)) -> User:
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
+                           token: str = Depends(get_token_from_header_or_cookie)) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
