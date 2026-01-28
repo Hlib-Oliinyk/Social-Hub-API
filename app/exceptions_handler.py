@@ -25,3 +25,16 @@ def setup_exception_handler(app):
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+    @app.exception_handler(FriendshipNotFound)
+    async def friendship_not_found_handler(request, exc):
+        return JSONResponse(
+            status_code=404,
+            content={"detail": "Friendship not found"}
+        )
+
+    @app.exception_handler(FriendshipAlreadyExists)
+    async def friendship_exists_handler(request, exc):
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "Friendship exists"}
+        )
