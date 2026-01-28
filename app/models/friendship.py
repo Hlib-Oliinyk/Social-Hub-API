@@ -4,12 +4,13 @@ from sqlalchemy import Enum as SAEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from app.db.database import Base
-from app.models.user import User
+
 
 class FriendStatus(str, Enum):
     pending = "pending"
     accepted = "accepted"
     rejected = "rejected"
+
 
 class Friendship(Base):
     __tablename__ = "friendships"
