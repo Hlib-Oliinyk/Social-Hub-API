@@ -2,7 +2,7 @@ from fastapi.responses import JSONResponse
 from app.exceptions import *
 
 
-def register_exception_handler(app):
+def setup_exception_handler(app):
     @app.exception_handler(UserNotFound)
     async def user_not_found_handler(request, exc):
         return JSONResponse(
