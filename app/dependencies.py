@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from fastapi import Request
 from fastapi.params import Depends
 from app.db.database import AsyncSessionLocal
@@ -8,14 +7,9 @@ from jose import jwt, JWTError
 from app.core.config import SECRET_KEY, ALGORITHM
 from app.services.user_service import get_user
 from app.models.user import User
+from app.exceptions.auth import *
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
-
-credentials_exception = HTTPException(
-    status_code=401,
-    detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"}
-)
 
 async def get_db():
     async with AsyncSessionLocal() as db:
@@ -31,7 +25,7 @@ async def get_token_from_header_or_cookie(request: Request) -> str:
     if cookie_token:
         return cookie_token
 
-    raise credentials_exception
+    raise InvalidCredentials()
 
 
 async def get_current_user(db: AsyncSession = Depends(get_db),
@@ -40,11 +34,11 @@ async def get_current_user(db: AsyncSession = Depends(get_db),
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
     except (JWTError, TypeError, ValueError):
-        raise credentials_exception
+        raise InvalidCredentials()
 
     user = await get_user(db, user_id=user_id)
 
     if user is None:
-        raise credentials_exception
+        raise InvalidCredentials()
 
     return user

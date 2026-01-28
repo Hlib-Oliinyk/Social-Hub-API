@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.v1 import *
+from app.exceptions_handler import setup_exception_handler
 
 app = FastAPI(
     docs_url="/api/docs"
@@ -7,6 +8,8 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(users_router)
+
+setup_exception_handler(app)
 
 @app.get("/")
 def root():

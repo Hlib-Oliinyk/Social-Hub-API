@@ -1,9 +1,9 @@
-from fastapi import HTTPException
 from app.core.security import hash_password, verify_password
 from app.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, exists
 from app.schemas.user import UserCreate
+from app.exceptions.user import *
 
 
 async def get_users(db: AsyncSession):
@@ -19,7 +19,7 @@ async def get_user(db: AsyncSession, user_id: int):
     user = result.scalars().first()
 
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise UserNotFound()
     return user
 
 
@@ -35,7 +35,7 @@ async def user_exists(db: AsyncSession, email: str, username: str) -> bool:
 
 async def create_user(db: AsyncSession, data: UserCreate):
     if await user_exists(db, data.email, data.username):
-        raise HTTPException(status_code=400, detail="User exists")
+        raise UserAlreadyExists()
 
     user = User(
         email = data.email,
