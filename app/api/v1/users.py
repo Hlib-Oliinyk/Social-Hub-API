@@ -14,7 +14,7 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_user( user_id: int, db: AsyncSession = Depends(get_db)):
+async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
     return await user_service.get_user(db, user_id)
 
 

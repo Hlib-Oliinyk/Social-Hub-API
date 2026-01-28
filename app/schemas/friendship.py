@@ -17,3 +17,7 @@ class FriendshipResponse(BaseModel):
 
 class FriendshipUpdate(BaseModel):
     status: FriendStatus | None = None
+
+
+class FriendResponse(BaseModel):
+    friend_id: int
