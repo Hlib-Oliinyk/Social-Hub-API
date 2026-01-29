@@ -6,8 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 from app.core.config import SECRET_KEY, ALGORITHM
 from app.services.user_service import get_user
+from app.schemas.post import PostPagination
 from app.models.user import User
 from app.exceptions.auth import *
+from typing import Annotated
+
+PaginationDep = Annotated[PostPagination, Depends(PostPagination)]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 

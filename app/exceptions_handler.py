@@ -38,3 +38,17 @@ def setup_exception_handler(app):
             status_code=400,
             content={"detail": "Friendship exists"}
         )
+
+    @app.exception_handler(PostNotFound)
+    async def post_not_found_handler(request, exc):
+        return JSONResponse(
+            status_code=404,
+            content={"detail":"Post not found"}
+        )
+
+    @app.exception_handler(PostForbidden)
+    async def post_forbidden_handler(request, exc):
+        return JSONResponse(
+            status_code=403,
+            content={"detail":"You are not allowed to delete this post"}
+        )
