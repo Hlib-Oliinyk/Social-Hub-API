@@ -15,3 +15,4 @@ class User(Base):
 
     friendship_requesters: Mapped[list["Friendship"]] = relationship(back_populates="requester", foreign_keys="[Friendship.requester_id]")
     friendship_addressees: Mapped[list["Friendship"]] = relationship(back_populates="addressee", foreign_keys="[Friendship.addressee_id]")
+    posts: Mapped[list["Posts"]] = relationship(back_populates="user")
