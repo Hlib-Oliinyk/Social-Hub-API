@@ -9,7 +9,7 @@ from app.schemas.post import PostCreate
 async def get_posts(db: AsyncSession, pagination: PaginationDep):
     stmt = select(Post).limit(pagination.limit).offset(pagination.offset)
     result = await db.execute(stmt)
-    return result.all()
+    return result.scalars().all()
 
 
 async def get_post(db: AsyncSession, post_id: int):
