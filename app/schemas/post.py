@@ -1,0 +1,15 @@
+from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
+
+
+class PostCreate(BaseModel):
+    user_id: int
+    content: str = Field(min_length=2, max_length=1000)
+
+
+class PostResponse(BaseModel):
+    user_id: int
+    content: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
