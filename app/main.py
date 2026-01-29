@@ -9,6 +9,7 @@ app = FastAPI(
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(friendships_router)
+app.include_router(posts_router)
 
 setup_exception_handler(app)
 
