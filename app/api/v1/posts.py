@@ -7,6 +7,8 @@ import app.services.post_service as post_service
 from app.dependencies import PaginationDep
 from app.models.user import User
 from app.schemas.post import PostCreate
+from app.schemas.comment import CommentResponse, CommentCreate
+import app.services.comment_service as comment_service
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -30,3 +32,14 @@ async def create_post(data: PostCreate, current_user: User = Depends(get_current
 async def delete_post(post_id: int, current_user: User = Depends(get_current_user),
                       db: AsyncSession = Depends(get_db)):
     return await post_service.delete_post(db, current_user.id, post_id)
+
+
+@router.get("/{post_id}/comments", response_model=list[CommentResponse])
+async def get_post_comments(post_id: int, db: AsyncSession = Depends(get_db)):
+    return await comment_service.get_post_comments(db, post_id)
+
+
+@router.post("/{post_id}/comments")
+async def add_comment(data: CommentCreate, current_user: User = Depends(get_current_user),
+                      db: AsyncSession = Depends(get_db)):
+    return await comment_service.add_comment(db, data, current_user.id)
