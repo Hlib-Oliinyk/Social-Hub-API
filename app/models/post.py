@@ -13,3 +13,4 @@ class Post(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     user: Mapped["User"] = relationship(back_populates="posts")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="post")
