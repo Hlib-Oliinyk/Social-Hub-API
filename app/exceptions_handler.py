@@ -52,3 +52,17 @@ def setup_exception_handler(app):
             status_code=403,
             content={"detail":"You are not allowed to delete this post"}
         )
+
+    @app.exception_handler(CommentForbidden)
+    async def comment_forbidden_handler(request, exc):
+        return JSONResponse(
+            status_code=403,
+            content={"detail":"You are not allowed to delete this comment"}
+        )
+
+    @app.exception_handler(CommentNotFound)
+    async def comment_not_found_handler(request, exc):
+        return JSONResponse(
+            status_code=404,
+            content={"detail":"Comment not found"}
+        )
