@@ -9,6 +9,8 @@ from app.models.user import User
 from app.schemas.post import PostCreate
 from app.schemas.comment import CommentResponse, CommentCreate
 import app.services.comment_service as comment_service
+import app.services.like_service as like_service
+from app.schemas.like import LikeCreate, LikeResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -43,3 +45,15 @@ async def get_post_comments(post_id: int, db: AsyncSession = Depends(get_db)):
 async def add_comment(data: CommentCreate, current_user: User = Depends(get_current_user),
                       db: AsyncSession = Depends(get_db)):
     return await comment_service.add_comment(db, data, current_user.id)
+
+
+@router.post("/{post_id}/like", response_model=LikeResponse)
+async def like_post(data: LikeCreate, current_user: User = Depends(get_current_user),
+                    db: AsyncSession = Depends(get_db)):
+    return await like_service.like_post(db, data, current_user.id)
+
+
+@router.delete("/{post_id}/like")
+async def unlike_post(post_id: int, current_user: User = Depends(get_current_user),
+                      db: AsyncSession = Depends(get_db)):
+    return await like_service.unlike_post(db, post_id, current_user.id)
