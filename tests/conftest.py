@@ -20,6 +20,18 @@ TEST_POST = {
     "content": "Yooo jordan"
 }
 
+TEST_COMMENT = {
+    "post_id": 1,
+    "user_id": 1,
+    "content": "nice post"
+}
+
+TEST_LIKE = {
+    "user_id": 1,
+    "post_id": 1
+}
+
+
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def prepare_database():
     async with test_async_engine.begin() as conn:

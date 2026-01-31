@@ -26,6 +26,9 @@ async def get_post_comments(db: AsyncSession, post_id: int):
 
 
 async def add_comment(db: AsyncSession, data: CommentCreate, user_id: int):
+
+    await get_post(db, data.post_id)
+
     comment = Comment(
         post_id = data.post_id,
         user_id = user_id,
