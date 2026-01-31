@@ -66,3 +66,17 @@ def setup_exception_handler(app):
             status_code=404,
             content={"detail":"Comment not found"}
         )
+
+    @app.exception_handler(PostAlreadyLiked)
+    async def post_already_liked_handler(request, exc):
+        return JSONResponse(
+            status_code=409,
+            content={"detail":"Post already liked"}
+        )
+
+    @app.exception_handler(LikeNotFound)
+    async def like_not_found_handler(request, exc):
+        return JSONResponse(
+            status_code=404,
+            content={"detail":"Like not found"}
+        )
