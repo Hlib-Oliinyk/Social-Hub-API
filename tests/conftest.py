@@ -15,6 +15,10 @@ TEST_USER_LOGIN = {
     "password": "secretpassword"
 }
 
+TEST_POST = {
+    "user_id": 1,
+    "content": "Yooo jordan"
+}
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def prepare_database():

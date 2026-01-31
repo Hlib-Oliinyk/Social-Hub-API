@@ -17,7 +17,9 @@ class User(Base):
                                                                      foreign_keys="[Friendship.requester_id]")
     friendship_addressees: Mapped[list["Friendship"]] = relationship(back_populates="addressee",
                                                                      foreign_keys="[Friendship.addressee_id]")
-    posts: Mapped[list["Post"]] = relationship(back_populates="user")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="user")
+    posts: Mapped[list["Post"]] = relationship(back_populates="user",
+                                               cascade="all, delete-orphan")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="user",
+                                                     cascade="all, delete-orphan")
     liked_posts: Mapped[list["Like"]] = relationship(back_populates="user",
                                                      cascade="all, delete-orphan")
