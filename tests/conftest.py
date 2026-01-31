@@ -43,3 +43,13 @@ async def registered_user(client):
         "username": "test",
         "password": "secretpassword"
     })
+
+
+@pytest_asyncio.fixture
+async def authorized_client(client, registered_user):
+    response = await client.post("/auth/login", json={
+        "email": "test@gmail.com",
+        "password": "secretpassword"
+    })
+    assert response.status_code == 200
+    return client

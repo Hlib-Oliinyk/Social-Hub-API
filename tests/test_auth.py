@@ -1,5 +1,6 @@
 import pytest
-from tests.conftest import client, registered_user
+from tests.conftest import client, registered_user, authorized_client
+
 
 @pytest.mark.asyncio
 async def test_register_user(client):
@@ -42,10 +43,7 @@ async def test_login_wrong_password(client, registered_user):
 
 
 @pytest.mark.asyncio
-async def test_logout(client, registered_user):
-    response = await client.post("/auth/logout", json={
-        "email": "test@gmail.com",
-        "password": "secretpassword"
-    })
+async def test_logout(authorized_client):
+    response = await authorized_client.post("/auth/logout")
     assert response.status_code == 200
     assert "access_token" not in response.cookies
