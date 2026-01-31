@@ -9,7 +9,7 @@ async_engine = create_async_engine(
 
 test_async_engine = create_async_engine(
     TEST_DATABASE_URL,
-    encho=False
+    echo=False
 )
 
 AsyncSessionLocal = async_sessionmaker(async_engine, expire_on_commit=False)

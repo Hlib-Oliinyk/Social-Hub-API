@@ -34,3 +34,12 @@ async def client():
         base_url="http://test"
     ) as ac:
         yield ac
+
+
+@pytest_asyncio.fixture
+async def registered_user(client):
+    await client.post("/auth/register", json={
+        "email": "test@gmail.com",
+        "username": "test",
+        "password": "secretpassword"
+    })
