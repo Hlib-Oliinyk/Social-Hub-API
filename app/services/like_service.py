@@ -2,18 +2,17 @@ from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from app.models.like import Like
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.like import LikeCreate
 from app.exceptions_handler import PostAlreadyLiked, LikeNotFound
 from app.services.post_service import get_post
 
 
-async def like_post(db: AsyncSession, data: LikeCreate, user_id: int):
+async def like_post(db: AsyncSession, post_id: int, user_id: int):
 
-    await get_post(db, data.post_id)
+    await get_post(db, post_id)
 
     like = Like(
         user_id = user_id,
-        post_id = data.post_id
+        post_id = post_id
     )
     db.add(like)
 

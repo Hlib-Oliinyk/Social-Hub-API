@@ -25,9 +25,12 @@ async def get_post_comments(db: AsyncSession, post_id: int):
     return result.scalars().all()
 
 
-async def add_comment(db: AsyncSession, data: CommentCreate, user_id: int):
+async def add_comment(db: AsyncSession, data: CommentCreate, user_id: int, post_id: int):
+
+    await get_post(db, post_id)
+
     comment = Comment(
-        post_id = data.post_id,
+        post_id = post_id,
         user_id = user_id,
         content = data.content
     )
