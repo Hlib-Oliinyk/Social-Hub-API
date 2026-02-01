@@ -1,5 +1,6 @@
 import pytest
-from tests.conftest import client, registered_user, authorized_client, TEST_USER, TEST_USER_LOGIN
+from tests.conftest import client, registered_user, authorized_client
+from tests.data import TEST_USER, TEST_USER_LOGIN
 
 
 @pytest.mark.asyncio

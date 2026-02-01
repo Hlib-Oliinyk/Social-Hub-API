@@ -3,33 +3,7 @@ from httpx import AsyncClient, ASGITransport
 from app.db.database import Base, test_async_engine, AsyncSessionTest
 from app.dependencies import get_db
 from app.main import app
-
-TEST_USER = {
-    "email": "test@gmail.com",
-    "username": "test",
-    "password": "secretpassword"
-}
-
-TEST_USER_LOGIN = {
-    "email": "test@gmail.com",
-    "password": "secretpassword"
-}
-
-TEST_POST = {
-    "user_id": 1,
-    "content": "Yooo jordan"
-}
-
-TEST_COMMENT = {
-    "post_id": 1,
-    "user_id": 1,
-    "content": "nice post"
-}
-
-TEST_LIKE = {
-    "user_id": 1,
-    "post_id": 1
-}
+from tests.data import TEST_USER, TEST_USER_LOGIN, TEST_POST
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
@@ -65,6 +39,15 @@ async def client():
 
 
 @pytest_asyncio.fixture
+async def clean_client():
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test"
+    ) as ac:
+        yield ac
+
+
+@pytest_asyncio.fixture
 async def registered_user(client):
     await client.post("/auth/register", json=TEST_USER)
 
@@ -74,3 +57,17 @@ async def authorized_client(client, registered_user):
     response = await client.post("/auth/login", json=TEST_USER_LOGIN)
     assert response.status_code == 200
     return client
+
+
+@pytest_asyncio.fixture
+async def registered_post(authorized_client):
+    response = await authorized_client.post("/posts", json=TEST_POST)
+    assert response.status_code == 200
+    return response.json()["id"]
+
+
+@pytest_asyncio.fixture
+async def registered_like(authorized_client, registered_post):
+    response = await authorized_client.post(f"/posts/{registered_post}/like")
+    assert response.status_code == 200
+    return response.json()

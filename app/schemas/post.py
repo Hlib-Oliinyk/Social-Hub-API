@@ -3,7 +3,6 @@ from datetime import datetime
 
 
 class PostCreate(BaseModel):
-    user_id: int
     content: str = Field(min_length=2, max_length=1000)
 
 

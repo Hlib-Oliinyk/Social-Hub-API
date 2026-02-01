@@ -8,8 +8,8 @@ async def test_me_authorized(authorized_client):
 
 
 @pytest.mark.asyncio
-async def test_me_unauthorized(client):
-    response = await client.get("/users/me")
+async def test_me_unauthorized(clean_client):
+    response = await clean_client.get("/users/me")
     assert response.status_code == 401
 
 
@@ -26,8 +26,8 @@ async def test_get_user_wrong_id(client):
 
 
 @pytest.mark.asyncio
-async def test_delete_user_not_authorized(client):
-    response = await client.delete("/users/me")
+async def test_delete_user_unauthorized(clean_client):
+    response = await clean_client.delete("/users/me")
     assert response.status_code == 401
 
 
