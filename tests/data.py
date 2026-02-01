@@ -29,7 +29,6 @@ TEST_COMMENT = {
 }
 
 TEST_FRIENDSHIP = {
-    "requester_id": 1,
     "addressee_id": 2,
     "status": "pending"
 }
