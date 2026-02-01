@@ -29,40 +29,34 @@ async def override_dependencies():
     app.dependency_overrides.clear()
 
 
-def make_client_fixture():
-    @pytest_asyncio.fixture
-    async def _client():
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as ac:
-            yield ac
-    return _client
+@pytest_asyncio.fixture
+async def client():
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test"
+    ) as ac:
+        yield ac
 
 
-client = make_client_fixture()
-clean_client = make_client_fixture()
+@pytest_asyncio.fixture
+async def clean_client():
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test"
+    ) as client:
+        yield client
 
 
-def make_user_fixtures(user_data, user_login):
-    @pytest_asyncio.fixture
-    async def registered_user(client):
-        await client.post("/auth/register", json=user_data)
+@pytest_asyncio.fixture
+async def registered_user(client):
+    await client.post("/auth/register", json=TEST_USER)
 
 
-    @pytest_asyncio.fixture
-    async def authorized_client(client, registered_user):
-        response = await client.post("/auth/login", json=user_login)
-        assert response.status_code == 200
-        return client
-
-    return registered_user, authorized_client
-
-
-registered_user, authorized_client = make_user_fixtures(TEST_USER, TEST_USER_LOGIN)
-registered_second_user, authorized_second_client = make_user_fixtures(
-    TEST_ANOTHER_USER, TEST_ANOTHER_USER_LOGIN
-)
+@pytest_asyncio.fixture
+async def authorized_client(client, registered_user):
+    response = await client.post("/auth/login", json=TEST_USER_LOGIN)
+    assert response.status_code == 200
+    return client
 
 
 @pytest_asyncio.fixture
