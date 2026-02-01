@@ -40,18 +40,18 @@ async def get_friendship(db: AsyncSession, friendship_id: int):
     return friendship
 
 
-async def friendship_exists(db: AsyncSession, data: FriendshipCreate) -> bool:
+async def friendship_exists(db: AsyncSession, requester_id: int, addressee_id: int) -> bool:
     stmt = select(
         exists().where(
             or_(
                 and_(
-                    Friendship.addressee_id == data.addressee_id,
-                    Friendship.requester_id == data.requester_id,
+                    Friendship.addressee_id == addressee_id,
+                    Friendship.requester_id == requester_id,
                     Friendship.status.in_([FriendStatus.pending, FriendStatus.accepted])
                 ),
                 and_(
-                    Friendship.addressee_id == data.requester_id,
-                    Friendship.requester_id == data.addressee_id,
+                    Friendship.addressee_id == requester_id,
+                    Friendship.requester_id == addressee_id,
                     Friendship.status.in_([FriendStatus.pending, FriendStatus.accepted])
                 )
             )
@@ -66,7 +66,7 @@ async def send_friendship(db: AsyncSession, data: FriendshipCreate, user_id: int
     if addressee is None:
         raise UserNotFound()
 
-    if await friendship_exists(db, data):
+    if await friendship_exists(db, user_id, data.addressee_id):
         raise FriendshipAlreadyExists()
 
     friendship = Friendship(

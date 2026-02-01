@@ -26,12 +26,14 @@ async def send_friendship_request(data: FriendshipCreate, current_user: User = D
 
 
 @router.post("/{user_id}/accept")
-async def accept_friendship_request(friendship_id: int, data: FriendshipUpdate, db: AsyncSession = Depends(get_db)):
+async def accept_friendship_request(friendship_id: int, data: FriendshipUpdate,
+                                    db: AsyncSession = Depends(get_db)):
     return await friendship_service.accept_friendship_request(db, friendship_id, data)
 
 
 @router.post("/{user_id}/reject")
-async def reject_friendship_request(friendship_id: int, data: FriendshipUpdate, db: AsyncSession = Depends(get_db)):
+async def reject_friendship_request(friendship_id: int, data: FriendshipUpdate,
+                                    db: AsyncSession = Depends(get_db)):
     return await friendship_service.reject_friendship_request(db, friendship_id, data)
 
 

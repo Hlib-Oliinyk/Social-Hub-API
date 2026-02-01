@@ -1,5 +1,4 @@
 import pytest
-from tests.conftest import client
 
 @pytest.mark.asyncio
 async def test_me_authorized(authorized_client):
@@ -14,14 +13,14 @@ async def test_me_unauthorized(clean_client):
 
 
 @pytest.mark.asyncio
-async def test_get_user_success(client):
-    response = await client.get("/users/1")
+async def test_get_user_success(clean_client):
+    response = await clean_client.get("/users/1")
     assert response.status_code == 200
 
 
 @pytest.mark.asyncio
-async def test_get_user_wrong_id(client):
-    response = await client.get("/users/2")
+async def test_get_user_wrong_id(clean_client):
+    response = await clean_client.get("/users/999")
     assert response.status_code == 404
 
 
