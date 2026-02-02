@@ -6,12 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db
 from app.core.security import create_access_token
 import app.services.user_service as user_service
+import app.services.email_service as email_service
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", response_model=UserResponse)
-async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
-    return await user_service.create_user(db, user)
+async def register(background_tasks: BackgroundTasks, user: UserCreate, db: AsyncSession = Depends(get_db)):
+    user = await user_service.create_user(db, user)
+    background_tasks.add_task(email_service.send_welcome_email, user)
+    return user
 
 
 @router.post("/login", response_model=Token)
