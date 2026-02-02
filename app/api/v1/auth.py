@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, BackgroundTasks
 from fastapi.params import Depends
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.schemas.token import Token
