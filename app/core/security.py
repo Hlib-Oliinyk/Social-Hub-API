@@ -2,6 +2,8 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 from app.core.config import ALGORITHM, SECRET_KEY
+import hashlib
+import secrets
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -24,3 +26,11 @@ def create_access_token(data: dict, expired_delta: timedelta | None = None) -> s
     to_encode.update({"exp": expire})
     encode_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encode_jwt
+
+
+def create_refresh_token() -> str:
+    return secrets.token_urlsafe(64)
+
+
+def hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()

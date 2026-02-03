@@ -20,6 +20,7 @@ async def test_login_success(clean_client, registered_user):
     response = await clean_client.post("/auth/login", json=TEST_USER_LOGIN)
     assert response.status_code == 200
     assert "access_token" in response.cookies
+    assert "refresh_token" in response.cookies
 
 
 @pytest.mark.asyncio
@@ -36,3 +37,17 @@ async def test_logout(authorized_client):
     response = await authorized_client.post("/auth/logout")
     assert response.status_code == 200
     assert "access_token" not in response.cookies
+    assert "refresh_token" not in response.cookies
+
+
+@pytest.mark.asyncio
+async def test_refresh(clean_client):
+    response = await clean_client.post("/auth/login", json=TEST_USER_LOGIN)
+    first_refresh_token = response.json()["refresh_token"]
+    print(first_refresh_token)
+
+    response = await clean_client.post("/auth/refresh")
+    second_refresh_token = response.json()["refresh_token"]
+    print(second_refresh_token)
+
+    assert first_refresh_token != second_refresh_token
