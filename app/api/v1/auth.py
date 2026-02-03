@@ -29,6 +29,7 @@ async def login(data: UserLogin, response: Response, db: AsyncSession = Depends(
     access_token = create_access_token(
         data = {"sub": str(user.id)}
     )
+
     refresh_token = create_refresh_token()
     refresh_token_hash = token_service.hash_token(refresh_token)
     await token_service.save_new_token(db, user.id, refresh_token_hash)
@@ -56,8 +57,14 @@ async def login(data: UserLogin, response: Response, db: AsyncSession = Depends(
 
 
 @router.post("/logout")
-async def logout(response: Response):
+async def logout(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    refresh_token = request.cookies.get("refresh_token")
+
+    await token_service.delete_refresh_token(db, refresh_token)
+
     response.delete_cookie("refresh_token")
+    response.delete_cookie("access_token")
+
     return {
         "detail": "Logged out"
     }

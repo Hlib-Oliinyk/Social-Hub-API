@@ -1,6 +1,6 @@
 from datetime import datetime, timezone, timedelta
 from fastapi import Request
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.models.refresh_token import RefreshToken
 from app.exceptions_handler import InvalidCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,8 +47,8 @@ async def save_new_token(db: AsyncSession, user_id: int, token: str):
     return new_token
 
 
-async def rotate_refresh_token(db: AsyncSession, refresh_token: str):
-    token_hash = hash_token(refresh_token)
+async def rotate_refresh_token(db: AsyncSession, token: str):
+    token_hash = hash_token(token)
 
     old_token = await get_valid_refresh_token(token_hash, db)
     old_token.is_revoked = True
@@ -61,3 +61,11 @@ async def rotate_refresh_token(db: AsyncSession, refresh_token: str):
 
     new_access = create_access_token(data = {"sub": str(old_token.user_id)})
     return new_refresh, new_access
+
+
+async def delete_refresh_token(db: AsyncSession, token: str):
+    token_hash = hash_token(token)
+
+    stmt = update(RefreshToken).where(RefreshToken.token == token_hash).values(is_revoked = True)
+    await db.execute(stmt)
+    await db.commit()
