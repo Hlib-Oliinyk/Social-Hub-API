@@ -29,3 +29,7 @@ async def send_welcome_email(user: User):
         subject="Welcome!",
         body=f"Dear {user.username}, Thank you for registration!"
     )
+
+
+async def print_welcome_message(user: User):
+    print(f"Dear {user.username}, Thank you for registration!")

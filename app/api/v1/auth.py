@@ -13,7 +13,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 @router.post("/register", response_model=UserResponse)
 async def register(background_tasks: BackgroundTasks, user: UserCreate, db: AsyncSession = Depends(get_db)):
     user = await user_service.create_user(db, user)
-    background_tasks.add_task(email_service.send_welcome_email, user)
+    background_tasks.add_task(email_service.print_welcome_message, user)
     return user
 
 
