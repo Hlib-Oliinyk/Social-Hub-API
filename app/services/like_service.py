@@ -7,7 +7,7 @@ from app.exceptions_handler import PostAlreadyLiked, LikeNotFound
 from app.services.post_service import PostService
 
 
-async def like_post(db: AsyncSession,post_id: int,user_id: int,post_service: PostService):
+async def like_post(db: AsyncSession, post_id: int, user_id: int, post_service: PostService):
     await post_service.get_post(post_id)
 
     like = Like(
