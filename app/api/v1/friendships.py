@@ -1,10 +1,12 @@
 from fastapi import APIRouter
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 import app.services.friendship_service as friendship_service
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, get_current_user, get_user_service
 from app.models.user import User
 from app.schemas.friendship import FriendshipResponse, FriendshipCreate, FriendResponse, FriendshipUpdate
+from app.services.user_service import UserService
 
 router = APIRouter(prefix="/friends", tags=["Friends"])
 
@@ -21,8 +23,9 @@ async def get_friendship_requests(current_user: User = Depends(get_current_user)
 
 @router.post("/{user_id}")
 async def send_friendship_request(data: FriendshipCreate, current_user: User = Depends(get_current_user),
-                                  db: AsyncSession = Depends(get_db)):
-    return await friendship_service.send_friendship(db, data, current_user.id)
+                                  db: AsyncSession = Depends(get_db),
+                                  user_service: UserService = Depends(get_user_service)):
+    return await friendship_service.send_friendship(db, data, current_user.id, user_service)
 
 
 @router.post("/{user_id}/accept")

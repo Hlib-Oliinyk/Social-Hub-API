@@ -1,11 +1,12 @@
 from sqlalchemy import select, or_, exists, and_
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.exceptions import FriendshipAlreadyExists
 from app.models.friendship import Friendship
 from app.schemas.friendship import FriendshipCreate, FriendStatus, FriendshipUpdate, FriendResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.user_service import get_user
 from app.exceptions.user import UserNotFound
 from app.exceptions.friendship import FriendshipNotFound
+from app.services.user_service import UserService
 
 
 async def get_friends(db: AsyncSession, user_id: int):
@@ -61,8 +62,9 @@ async def friendship_exists(db: AsyncSession, requester_id: int, addressee_id: i
     return result.scalar()
 
 
-async def send_friendship(db: AsyncSession, data: FriendshipCreate, user_id: int):
-    addressee = await get_user(db, data.addressee_id)
+async def send_friendship(db: AsyncSession, data: FriendshipCreate, user_id: int,
+                          user_service: UserService):
+    addressee = await user_service.get_user(data.addressee_id)
     if addressee is None:
         raise UserNotFound()
 

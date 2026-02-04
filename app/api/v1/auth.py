@@ -1,27 +1,33 @@
 from fastapi import APIRouter, Response, BackgroundTasks, Request
 from fastapi.params import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.schemas.token import Token
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.dependencies import get_db
+from app.dependencies import get_db, get_user_service
 from app.core.security import create_access_token, create_refresh_token
-import app.services.user_service as user_service
 import app.services.email_service as email_service
 import app.services.token_service as token_service
 from app.exceptions_handler import InvalidCredentials
+from app.services.user_service import UserService
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", response_model=UserResponse)
-async def register(background_tasks: BackgroundTasks, user: UserCreate, db: AsyncSession = Depends(get_db)):
-    user = await user_service.create_user(db, user)
+async def register(background_tasks: BackgroundTasks,
+                   user: UserCreate,
+                   service: UserService = Depends(get_user_service)):
+    user = await service.create_user(user)
     background_tasks.add_task(email_service.print_welcome_message, user)
     return user
 
 
 @router.post("/login", response_model=Token)
-async def login(data: UserLogin, response: Response, db: AsyncSession = Depends(get_db)):
-    user = await user_service.authenticate_user(db, data.email, data.password)
+async def login(data: UserLogin,
+                response: Response,
+                db: AsyncSession = Depends(get_db),
+                service: UserService = Depends(get_user_service)):
+    user = await service.authenticate_user(data.email, data.password)
 
     if user is None:
         raise InvalidCredentials()
