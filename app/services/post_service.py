@@ -1,7 +1,6 @@
 from typing import Sequence
 
 from app.models.post import Post
-from app.dependencies import PaginationDep
 from app.exceptions_handler import PostNotFound, PostForbidden
 from app.schemas.post import PostCreate
 from app.repositories.post import PostRepository
@@ -17,8 +16,11 @@ class PostService:
             raise PostNotFound()
         return post
 
-    async def get_posts(self, pagination: PaginationDep) -> Sequence[Post]:
-        return await self.repo.get_posts(pagination)
+    async def get_posts(self, pagination) -> Sequence[Post]:
+        return await self.repo.get_posts(
+            pagination.limit,
+            pagination.offset
+        )
 
     async def create_post(self, data: PostCreate, user_id: int) -> Post:
         post_dict = data.model_dump()

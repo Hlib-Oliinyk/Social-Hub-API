@@ -13,17 +13,34 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
-    friendship_requesters: Mapped[list["Friendship"]] = relationship(back_populates="requester",
-                                                                     foreign_keys="[Friendship.requester_id]",
-                                                                     cascade="all, delete-orphan")
-    friendship_addressees: Mapped[list["Friendship"]] = relationship(back_populates="addressee",
-                                                                     foreign_keys="[Friendship.addressee_id]",
-                                                                     cascade="all, delete-orphan")
-    posts: Mapped[list["Post"]] = relationship(back_populates="user",
-                                               cascade="all, delete-orphan")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="user",
-                                                     cascade="all, delete-orphan")
-    liked_posts: Mapped[list["Like"]] = relationship(back_populates="user",
-                                                     cascade="all, delete-orphan")
-    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(back_populates="user",
-                                                         cascade="all, delete-orphan")
+    friendship_requesters: Mapped[list["Friendship"]] = relationship(
+        back_populates="requester",
+        foreign_keys="[Friendship.requester_id]",
+        cascade="all, delete-orphan"
+    )
+
+    friendship_addressees: Mapped[list["Friendship"]] = relationship(
+        back_populates="addressee",
+        foreign_keys="[Friendship.addressee_id]",
+        cascade="all, delete-orphan"
+    )
+
+    posts: Mapped[list["Post"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    liked_posts: Mapped[list["Like"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+
+    )
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

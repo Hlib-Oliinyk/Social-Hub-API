@@ -25,5 +25,12 @@ class Friendship(Base):
     )
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
-    requester: Mapped["User"] = relationship(back_populates="friendship_requesters", foreign_keys="[Friendship.requester_id]")
-    addressee: Mapped["User"] = relationship(back_populates="friendship_addressees", foreign_keys="[Friendship.addressee_id]")
+    requester: Mapped["User"] = relationship(
+        back_populates="friendship_requesters",
+        foreign_keys="[Friendship.requester_id]"
+    )
+
+    addressee: Mapped["User"] = relationship(
+        back_populates="friendship_addressees",
+        foreign_keys="[Friendship.addressee_id]"
+    )

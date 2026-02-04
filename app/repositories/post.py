@@ -15,8 +15,8 @@ class PostRepository:
         result = await self.db.execute(stmt)
         return result.scalars().first()
 
-    async def get_posts(self, pagination) -> Sequence[Post]:
-        stmt = select(Post).limit(pagination.limit).offset(pagination.offset)
+    async def get_posts(self, limit, offset) -> Sequence[Post]:
+        stmt = select(Post).limit(limit).offset(offset)
         result = await self.db.execute(stmt)
         return result.scalars().all()
 

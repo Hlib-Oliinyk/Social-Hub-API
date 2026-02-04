@@ -13,6 +13,8 @@ from app.exceptions.auth import InvalidCredentials
 from app.services.token_service import get_token_from_header_or_cookie
 from app.services.user_service import UserService
 from app.repositories.user import UserRepository
+from app.services.post_service import PostService
+from app.repositories.post import PostRepository
 
 
 PaginationDep = Annotated[PostPagination, Depends(PostPagination)]
@@ -23,14 +25,20 @@ async def get_db():
         yield db
 
 
-def get_user_repository(
-    db: AsyncSession = Depends(get_db)) -> UserRepository:
+def get_user_repository(db: AsyncSession = Depends(get_db)) -> UserRepository:
     return UserRepository(db)
 
 
-def get_user_service(
-    repo: UserRepository = Depends(get_user_repository)) -> UserService:
+def get_user_service(repo: UserRepository = Depends(get_user_repository)) -> UserService:
     return UserService(repo)
+
+
+def get_post_repository(db: AsyncSession = Depends(get_db)) -> PostRepository:
+    return PostRepository(db)
+
+
+def get_post_service(repo: PostRepository = Depends(get_post_repository)) -> PostService:
+    return PostService(repo)
 
 
 async def get_current_user(token: str = Depends(get_token_from_header_or_cookie),
