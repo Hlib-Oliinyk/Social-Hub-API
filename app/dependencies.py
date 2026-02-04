@@ -23,9 +23,14 @@ async def get_db():
         yield db
 
 
-async def get_user_service(db: AsyncSession = Depends(get_db)) -> UserService:
-    repository = UserRepository(db)
-    return UserService(repository)
+def get_user_repository(
+    db: AsyncSession = Depends(get_db)) -> UserRepository:
+    return UserRepository(db)
+
+
+def get_user_service(
+    repo: UserRepository = Depends(get_user_repository)) -> UserService:
+    return UserService(repo)
 
 
 async def get_current_user(token: str = Depends(get_token_from_header_or_cookie),
