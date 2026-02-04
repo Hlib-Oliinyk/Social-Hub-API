@@ -1,18 +1,22 @@
 from fastapi import APIRouter
 from fastapi.params import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_db, get_current_user, get_comment_service
+from app.dependencies import (
+    get_current_user,
+    get_comment_service,
+    get_like_service
+)
 from app.schemas.post import PostResponse, PostCreate
-from app.dependencies import PaginationDep
+from app.dependencies import PaginationDep, get_post_service
 from app.models.user import User
 from app.schemas.comment import CommentResponse, CommentCreate
 from app.schemas.like import LikeResponse
-from app.dependencies import get_post_service
-from app.services.post_service import PostService
-from app.services.comment_service import CommentService
+from app.services import (
+    PostService,
+    CommentService,
+    LikeService
+)
 
-import app.services.like_service as like_service
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -72,16 +76,15 @@ async def add_comment(
 async def like_post(
     post_id: int,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-    post_service: PostService = Depends(get_post_service)
+    service: LikeService = Depends(get_like_service)
 ):
-    return await like_service.like_post(db, post_id, current_user.id, post_service)
+    return await service.like_post(post_id, current_user.id)
 
 
 @router.delete("/{post_id}/like")
 async def unlike_post(
-    post_id: int, current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-    post_service: PostService = Depends(get_post_service)
+    post_id: int,
+    current_user: User = Depends(get_current_user),
+    service: LikeService = Depends(get_like_service)
 ):
-    return await like_service.unlike_post(db, post_id, current_user.id, post_service)
+    return await service.unlike_post(post_id, current_user.id)

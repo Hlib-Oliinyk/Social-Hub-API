@@ -11,12 +11,18 @@ from app.models.user import User
 from app.db.database import AsyncSessionLocal
 from app.exceptions.auth import InvalidCredentials
 from app.services.token_service import get_token_from_header_or_cookie
-from app.services.user_service import UserService
-from app.repositories.user import UserRepository
-from app.services.post_service import PostService
-from app.repositories.post import PostRepository
-from app.repositories.comment import CommentRepository
-from app.services.comment_service import CommentService
+from app.services import (
+    UserService,
+    PostService,
+    CommentService,
+    LikeService
+)
+from app.repositories import (
+    UserRepository,
+    PostRepository,
+    CommentRepository,
+    LikeRepository
+)
 
 
 PaginationDep = Annotated[PostPagination, Depends(PostPagination)]
@@ -48,10 +54,21 @@ def get_comment_repository(db: AsyncSession = Depends(get_db)) -> CommentReposit
 
 
 def get_comment_service(
-        comment_repo: CommentRepository = Depends(get_comment_repository),
-        post_repo: PostRepository = Depends(get_post_repository)
+    comment_repo: CommentRepository = Depends(get_comment_repository),
+    post_repo: PostRepository = Depends(get_post_repository)
 ) -> CommentService:
     return CommentService(comment_repo, post_repo)
+
+
+def get_like_repository(db: AsyncSession = Depends(get_db)) -> LikeRepository:
+    return LikeRepository(db)
+
+
+def get_like_service(
+    like_repo: LikeRepository = Depends(get_like_repository),
+    post_repo: PostRepository = Depends(get_post_repository)
+) -> LikeService:
+    return LikeService(like_repo, post_repo)
 
 
 async def get_current_user(
