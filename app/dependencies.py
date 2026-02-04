@@ -15,6 +15,8 @@ from app.services.user_service import UserService
 from app.repositories.user import UserRepository
 from app.services.post_service import PostService
 from app.repositories.post import PostRepository
+from app.repositories.comment import CommentRepository
+from app.services.comment_service import CommentService
 
 
 PaginationDep = Annotated[PostPagination, Depends(PostPagination)]
@@ -41,8 +43,21 @@ def get_post_service(repo: PostRepository = Depends(get_post_repository)) -> Pos
     return PostService(repo)
 
 
-async def get_current_user(token: str = Depends(get_token_from_header_or_cookie),
-                           service: UserService = Depends(get_user_service)) -> User:
+def get_comment_repository(db: AsyncSession = Depends(get_db)) -> CommentRepository:
+    return CommentRepository(db)
+
+
+def get_comment_service(
+        comment_repo: CommentRepository = Depends(get_comment_repository),
+        post_repo: PostRepository = Depends(get_post_repository)
+) -> CommentService:
+    return CommentService(comment_repo, post_repo)
+
+
+async def get_current_user(
+    token: str = Depends(get_token_from_header_or_cookie),
+    service: UserService = Depends(get_user_service)
+) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
@@ -50,7 +65,6 @@ async def get_current_user(token: str = Depends(get_token_from_header_or_cookie)
         raise InvalidCredentials()
 
     user = await service.get_user(user_id=user_id)
-
     if user is None:
         raise InvalidCredentials()
     return user

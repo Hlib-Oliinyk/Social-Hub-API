@@ -32,4 +32,3 @@ class PostService:
         if post.user_id != user_id:
             raise PostForbidden()
         return await self.repo.delete_post(post)
-
