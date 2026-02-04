@@ -1,16 +1,17 @@
 from fastapi import APIRouter
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.dependencies import get_db, get_current_user
-from app.schemas.post import PostResponse
-import app.services.post_service as post_service
+from app.schemas.post import PostResponse, PostCreate
 from app.dependencies import PaginationDep
 from app.models.user import User
-from app.schemas.post import PostCreate
 from app.schemas.comment import CommentResponse, CommentCreate
+from app.schemas.like import LikeResponse
+
+import app.services.post_service as post_service
 import app.services.comment_service as comment_service
 import app.services.like_service as like_service
-from app.schemas.like import LikeResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 

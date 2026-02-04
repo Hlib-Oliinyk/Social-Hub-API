@@ -3,7 +3,7 @@ from typing import Sequence
 from app.core.security import hash_password, verify_password
 from app.models.user import User
 from app.schemas.user import UserCreate
-from app.exceptions.user import *
+from app.exceptions.user import UserNotFound, UserAlreadyExists
 from app.repositories.user import UserRepository
 
 
@@ -13,7 +13,7 @@ class UserService:
 
     async def get_user(self, user_id: int) -> User:
         user = await self.repo.get_by_id(user_id)
-        if not user:
+        if user is None:
             raise UserNotFound()
         return user
 
@@ -37,6 +37,6 @@ class UserService:
 
     async def authenticate_user(self, login: str, password: str) -> User | None:
         user = await self.repo.get_by_login(login)
-        if not user or not verify_password(password, user.hashed_password):
+        if user is None or not verify_password(password, user.hashed_password):
             return None
         return user

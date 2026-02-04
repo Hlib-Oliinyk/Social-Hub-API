@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-import app.services.comment_service as comment_service
 from app.dependencies import get_db, get_current_user
 from app.models.user import User
+
+import app.services.comment_service as comment_service
 
 router = APIRouter(prefix="/comments", tags=["Comments"])
 

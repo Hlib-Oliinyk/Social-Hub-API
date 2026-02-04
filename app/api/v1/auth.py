@@ -6,10 +6,11 @@ from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.schemas.token import Token
 from app.dependencies import get_db, get_user_service
 from app.core.security import create_access_token, create_refresh_token
-import app.services.email_service as email_service
-import app.services.token_service as token_service
 from app.exceptions_handler import InvalidCredentials
 from app.services.user_service import UserService
+
+import app.services.email_service as email_service
+import app.services.token_service as token_service
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 

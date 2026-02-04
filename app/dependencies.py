@@ -9,7 +9,7 @@ from app.core.config import SECRET_KEY, ALGORITHM
 from app.schemas.post import PostPagination
 from app.models.user import User
 from app.db.database import AsyncSessionLocal
-from app.exceptions.auth import *
+from app.exceptions.auth import InvalidCredentials
 from app.services.token_service import get_token_from_header_or_cookie
 from app.services.user_service import UserService
 from app.repositories.user import UserRepository
