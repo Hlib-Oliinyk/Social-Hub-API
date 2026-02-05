@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db, get_current_user, get_user_service
 from app.models import User
-from app.schemas import FriendshipResponse, FriendshipCreate, FriendResponse, FriendshipUpdate
+from app.schemas import FriendshipResponse, FriendshipCreate, FriendResponse
 from app.services import UserService
 
 import app.services.friendship_service as friendship_service
