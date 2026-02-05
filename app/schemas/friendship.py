@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from app.models.friendship import FriendStatus
+from app.models import FriendStatus
 
 class FriendshipCreate(BaseModel):
     addressee_id: int
@@ -14,9 +14,8 @@ class FriendshipResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class FriendshipUpdate(BaseModel):
-    status: FriendStatus | None = None
-
-
 class FriendResponse(BaseModel):
-    friend_id: int
+    id: int
+    friend_name: str
+
+    model_config = ConfigDict(from_attributes=True)

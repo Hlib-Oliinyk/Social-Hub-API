@@ -1,10 +1,10 @@
 from typing import Sequence
 
 from app.core.security import hash_password, verify_password
-from app.models.user import User
-from app.schemas.user import UserCreate
+from app.models import User
+from app.schemas import UserCreate
 from app.exceptions.user import UserNotFound, UserAlreadyExists
-from app.repositories.user import UserRepository
+from app.repositories import UserRepository
 
 
 class UserService:

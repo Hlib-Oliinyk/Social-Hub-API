@@ -2,12 +2,16 @@ from fastapi import APIRouter, Response, BackgroundTasks, Request
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.user import UserCreate, UserLogin, UserResponse
-from app.schemas.token import Token
+from app.schemas import (
+    UserCreate,
+    UserLogin,
+    UserResponse,
+    Token
+)
 from app.dependencies import get_db, get_user_service
 from app.core.security import create_access_token, create_refresh_token
 from app.exceptions_handler import InvalidCredentials
-from app.services.user_service import UserService
+from app.services import UserService
 
 import app.services.email_service as email_service
 import app.services.token_service as token_service

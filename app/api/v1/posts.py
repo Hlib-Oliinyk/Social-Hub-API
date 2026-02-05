@@ -6,11 +6,15 @@ from app.dependencies import (
     get_comment_service,
     get_like_service
 )
-from app.schemas.post import PostResponse, PostCreate
+from app.schemas import (
+    PostResponse,
+    PostCreate,
+    CommentResponse,
+    CommentCreate,
+    LikeResponse
+)
 from app.dependencies import PaginationDep, get_post_service
-from app.models.user import User
-from app.schemas.comment import CommentResponse, CommentCreate
-from app.schemas.like import LikeResponse
+from app.models import User
 from app.services import (
     PostService,
     CommentService,

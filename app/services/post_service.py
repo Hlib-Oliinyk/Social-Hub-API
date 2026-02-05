@@ -1,9 +1,9 @@
 from typing import Sequence
 
-from app.models.post import Post
+from app.models import Post
 from app.exceptions_handler import PostNotFound, PostForbidden
-from app.schemas.post import PostCreate
-from app.repositories.post import PostRepository
+from app.schemas import PostCreate
+from app.repositories import PostRepository
 
 
 class PostService:

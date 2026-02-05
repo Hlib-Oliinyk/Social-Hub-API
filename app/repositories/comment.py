@@ -3,7 +3,7 @@ from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.models.comment import Comment
+from app.models import Comment
 
 
 class CommentRepository:

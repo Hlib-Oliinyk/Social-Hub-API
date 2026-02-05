@@ -2,7 +2,7 @@ from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.like import Like
+from app.models import Like
 from app.exceptions_handler import PostAlreadyLiked
 
 

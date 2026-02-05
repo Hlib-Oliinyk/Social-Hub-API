@@ -1,11 +1,15 @@
 from datetime import datetime, timezone, timedelta
 from fastapi import Request
 from sqlalchemy import select, update
-from app.models.refresh_token import RefreshToken
+
+from app.models import RefreshToken
 from app.exceptions_handler import InvalidCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.security import hash_token
-from app.core.security import create_refresh_token, create_access_token
+from app.core.security import (
+    hash_token,
+    create_refresh_token,
+    create_access_token
+)
 
 
 async def get_token_from_header_or_cookie(request: Request) -> str:

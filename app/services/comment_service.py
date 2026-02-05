@@ -1,11 +1,10 @@
 from typing import Sequence
 
 from app.exceptions import PostNotFound
-from app.schemas.comment import CommentCreate
-from app.models.comment import Comment
+from app.schemas import CommentCreate
+from app.models import Comment
 from app.exceptions_handler import CommentForbidden, CommentNotFound
-from app.repositories.comment import CommentRepository
-from app.repositories.post import PostRepository
+from app.repositories import CommentRepository, PostRepository
 
 
 class CommentService:
@@ -23,7 +22,6 @@ class CommentService:
         post = await self.post_repo.get_by_id(post_id)
         if post is None:
             raise PostNotFound()
-
         return await self.repo.get_comments_by_post(post_id)
 
     async def add_comment(self, post_id: int, user_id: int, data: CommentCreate) -> Comment:

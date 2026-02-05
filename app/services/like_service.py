@@ -1,7 +1,6 @@
-from app.models.like import Like
+from app.models import Like
 from app.exceptions_handler import LikeNotFound, PostNotFound
-from app.repositories.post import PostRepository
-from app.repositories.like import LikeRepository
+from app.repositories import PostRepository, LikeRepository
 
 
 class LikeService:
@@ -13,7 +12,6 @@ class LikeService:
         post = await self.post_repo.get_by_id(post_id)
         if post is None:
             raise PostNotFound()
-
         return await self.repo.add_like(user_id, post_id)
 
     async def unlike_post(self, post_id: int, user_id: int) -> bool:

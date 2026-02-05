@@ -1,6 +1,8 @@
 from email.message import EmailMessage
+
 import aiosmtplib
-from app.models.user import User
+
+from app.models import User
 from app.core.config import ADMIN_GMAIL, APP_PASSWORD
 
 async def send_email(recipient: str, subject: str, body: str):

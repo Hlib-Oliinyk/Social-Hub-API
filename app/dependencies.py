@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 
 from app.core.config import SECRET_KEY, ALGORITHM
-from app.schemas.post import PostPagination
-from app.models.user import User
+from app.schemas import PostPagination
+from app.models import User
 from app.db.database import AsyncSessionLocal
 from app.exceptions.auth import InvalidCredentials
 from app.services.token_service import get_token_from_header_or_cookie
