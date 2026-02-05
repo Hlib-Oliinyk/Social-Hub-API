@@ -1,7 +1,9 @@
-from app.db.database import Base
+import datetime
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, func
-import datetime
+
+from app.db import Base
 
 
 class Comment(Base):

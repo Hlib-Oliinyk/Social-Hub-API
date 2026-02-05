@@ -1,7 +1,9 @@
+import datetime
+
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.db.database import Base
-import datetime
+
+from app.db import Base
 
 
 class Post(Base):
@@ -13,7 +15,12 @@ class Post(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     user: Mapped["User"] = relationship(back_populates="posts")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="post",
-                                                     cascade="all, delete-orphan")
-    likes: Mapped[list["Like"]] = relationship(back_populates="post",
-                                               cascade="all, delete-orphan")
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="post",
+        cascade="all, delete-orphan"
+    )
+
+    likes: Mapped[list["Like"]] = relationship(
+        back_populates="post",
+        cascade="all, delete-orphan"
+    )

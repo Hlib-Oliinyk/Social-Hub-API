@@ -1,6 +1,16 @@
-from app.models.user import User
-from app.models.friendship import Friendship
-from app.models.post import Post
-from app.models.comment import Comment
-from app.models.like import Like
-from app.models.refresh_token import RefreshToken
+from .user import User
+from .friendship import Friendship, FriendStatus
+from .post import Post
+from .comment import Comment
+from .like import Like
+from .refresh_token import RefreshToken
+
+__all__ = [
+    "User",
+    "Friendship",
+    "FriendStatus",
+    "Post",
+    "Comment",
+    "Like",
+    "RefreshToken"
+]

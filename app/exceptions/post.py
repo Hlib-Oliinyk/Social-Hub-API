@@ -1,4 +1,4 @@
-from app.exceptions import AppError
+from app.exceptions.base import AppError
 
 class PostNotFound(AppError):
     pass

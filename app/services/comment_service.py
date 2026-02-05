@@ -1,52 +1,44 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.comment import CommentCreate
-from app.models.comment import Comment
-from app.services.post_service import get_post
+from typing import Sequence
+
+from app.exceptions import PostNotFound
+from app.schemas import CommentCreate
+from app.models import Comment
 from app.exceptions_handler import CommentForbidden, CommentNotFound
+from app.repositories import CommentRepository, PostRepository
 
 
-async def get_comment(db: AsyncSession, comment_id: int):
-    stmt = select(Comment).where(Comment.id == comment_id)
-    result = await db.execute(stmt)
+class CommentService:
+    def __init__(self, repo: CommentRepository, post_repo: PostRepository):
+        self.repo = repo
+        self.post_repo = post_repo
 
-    comment = result.scalars().first()
+    async def get_comment(self, comment_id: int) -> Comment:
+        comment = await self.repo.get_by_id(comment_id)
+        if comment is None:
+            raise CommentNotFound()
+        return comment
 
-    if not comment:
-        raise CommentNotFound()
-    return comment
+    async def get_post_comments(self, post_id: int) -> Sequence[Comment]:
+        post = await self.post_repo.get_by_id(post_id)
+        if post is None:
+            raise PostNotFound()
+        return await self.repo.get_comments_by_post(post_id)
 
+    async def add_comment(self, post_id: int, user_id: int, data: CommentCreate) -> Comment:
+        post = await self.post_repo.get_by_id(post_id)
+        if post is None:
+            raise PostNotFound()
 
-async def get_post_comments(db: AsyncSession, post_id: int):
-    post = await get_post(db, post_id)
+        return await self.repo.create_comment(
+            **data.model_dump(),
+            post_id = post_id,
+            user_id = user_id
+        )
 
-    stmt = select(Comment).where(Comment.post_id == post.id)
-    result = await db.execute(stmt)
-    return result.scalars().all()
+    async def delete_comment(self, comment_id: int, user_id: int) -> bool:
+        comment = await self.repo.get_by_id(comment_id)
+        if comment.user_id != user_id:
+            raise CommentForbidden()
 
-
-async def add_comment(db: AsyncSession, data: CommentCreate, user_id: int, post_id: int):
-
-    await get_post(db, post_id)
-
-    comment = Comment(
-        post_id = post_id,
-        user_id = user_id,
-        content = data.content
-    )
-
-    db.add(comment)
-    await db.commit()
-    await db.refresh(comment)
-    return comment
-
-
-async def delete_comment(db: AsyncSession, comment_id: int, user_id: int):
-    comment = await get_comment(db, comment_id)
-
-    if comment.user_id != user_id:
-        raise CommentForbidden()
-
-    await db.delete(comment)
-    await db.commit()
-    return True
+        await self.repo.delete_comment(comment)
+        return True

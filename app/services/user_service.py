@@ -1,72 +1,42 @@
+from typing import Sequence
+
 from app.core.security import hash_password, verify_password
-from app.models.user import User
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_, exists
-from app.schemas.user import UserCreate
-from app.exceptions.user import *
+from app.models import User
+from app.schemas import UserCreate
+from app.exceptions import UserNotFound, UserAlreadyExists
+from app.repositories import UserRepository
 
 
-async def get_users(db: AsyncSession):
-    stmt = select(User)
-    result = await db.execute(stmt)
-    return result.scalars().all()
+class UserService:
+    def __init__(self, repo: UserRepository):
+        self.repo = repo
 
+    async def get_user(self, user_id: int) -> User:
+        user = await self.repo.get_by_id(user_id)
+        if user is None:
+            raise UserNotFound()
+        return user
 
-async def get_user(db: AsyncSession, user_id: int):
-    stmt = select(User).filter(User.id == user_id)
-    result = await db.execute(stmt)
+    async def get_all_users(self) -> Sequence[User]:
+        return await self.repo.get_all_users()
 
-    user = result.scalars().first()
+    async def create_user(self, data: UserCreate) -> User:
+        exists = await self.repo.user_exists(data.email, data.username)
+        if exists:
+            raise UserAlreadyExists()
 
-    if not user:
-        raise UserNotFound()
-    return user
+        user_dict = data.model_dump()
+        user_dict["hashed_password"] = hash_password(user_dict.pop("password"))
 
+        return await self.repo.create_user(**user_dict)
 
-async def user_exists(db: AsyncSession, email: str, username: str) -> bool:
-    stmt = select(
-        exists().where(
-            or_(User.username == username, User.email == email)
-        )
-    )
-    result = await db.execute(stmt)
-    return result.scalar()
+    async def delete_user(self, user_id: int) -> bool:
+        user = await self.get_user(user_id)
+        await self.repo.delete_user(user)
+        return True
 
-
-async def create_user(db: AsyncSession, data: UserCreate):
-    if await user_exists(db, data.email, data.username):
-        raise UserAlreadyExists()
-
-    user = User(
-        email = data.email,
-        username = data.username,
-        hashed_password = hash_password(data.password)
-    )
-
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
-    return user
-
-
-async def delete_user(db: AsyncSession, user_id: int):
-    user = await get_user(db, user_id)
-
-    await db.delete(user)
-    await db.commit()
-    return True
-
-
-async def authenticate_user(db: AsyncSession, login: str, password: str) -> User | None:
-    stmt = select(User).filter(or_(User.username == login, User.email == login))
-    result = await db.execute(stmt)
-
-    user = result.scalar_one_or_none()
-
-    if not user:
-        return None
-
-    if not verify_password(password, user.hashed_password):
-        return None
-
-    return user
+    async def authenticate_user(self, login: str, password: str) -> User | None:
+        user = await self.repo.get_by_login(login)
+        if user is None or not verify_password(password, user.hashed_password):
+            return None
+        return user

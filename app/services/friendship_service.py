@@ -1,128 +1,63 @@
-from sqlalchemy import select, or_, exists, and_
-from app.exceptions import FriendshipAlreadyExists
-from app.models.friendship import Friendship
-from app.schemas.friendship import FriendshipCreate, FriendStatus, FriendshipUpdate, FriendResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.user_service import get_user
-from app.exceptions.user import UserNotFound
-from app.exceptions.friendship import FriendshipNotFound
+from typing import Sequence
+
+from app.models import Friendship
+from app.schemas import (
+    FriendshipCreate,
+    FriendResponse
+)
+from app.exceptions import (
+    UserNotFound,
+    FriendshipAlreadyExists,
+    FriendshipNotFound
+)
+from app.repositories import FriendshipRepository, UserRepository
 
 
-async def get_friends(db: AsyncSession, user_id: int):
-    stmt = select(Friendship).filter(
-        or_(
-            Friendship.addressee_id == user_id,
-            Friendship.requester_id == user_id
-        ),
-        Friendship.status == FriendStatus.accepted
-    )
-    result = await db.execute(stmt)
-    friendships = result.scalars().all()
+class FriendshipService:
+    def __init__(self, repo: FriendshipRepository, user_repo: UserRepository):
+        self.repo = repo
+        self.user_repo = user_repo
 
-    return [
-        FriendResponse(
-            friend_id=(
-                f.addressee_id if f.requester_id == user_id else f.requester_id
-            )
-        )
-        for f in friendships
-    ]
+    async def get_friends(self, user_id: int):
+        friends = await self.repo.get_friends_with_names(user_id)
+        return [FriendResponse.model_validate(f) for f in friends]
 
+    async def get_friendship(self, friendship_id: int) -> Friendship:
+        friendship = await self.repo.get_friendship(friendship_id)
+        if friendship is None:
+            raise FriendshipNotFound()
+        return friendship
 
-async def get_friendship(db: AsyncSession, friendship_id: int):
-    stmt = select(Friendship).filter(Friendship.id == friendship_id)
-    result = await db.execute(stmt)
+    async def send_friendship(self, user_id: int, data: FriendshipCreate) -> Friendship:
+        addressee = await self.user_repo.get_by_id(user_id)
+        if addressee is None:
+            raise UserNotFound()
 
-    friendship = result.scalars().first()
+        if await self.repo.friendship_exists(user_id, data.addressee_id):
+            raise FriendshipAlreadyExists()
 
-    if not friendship:
-        raise FriendshipNotFound()
-    return friendship
+        friendship_dict = data.model_dump()
+        friendship_dict["requester_id"] = user_id
 
+        return await self.repo.send_friendship(**friendship_dict)
 
-async def friendship_exists(db: AsyncSession, requester_id: int, addressee_id: int) -> bool:
-    stmt = select(
-        exists().where(
-            or_(
-                and_(
-                    Friendship.addressee_id == addressee_id,
-                    Friendship.requester_id == requester_id,
-                    Friendship.status.in_([FriendStatus.pending, FriendStatus.accepted])
-                ),
-                and_(
-                    Friendship.addressee_id == requester_id,
-                    Friendship.requester_id == addressee_id,
-                    Friendship.status.in_([FriendStatus.pending, FriendStatus.accepted])
-                )
-            )
-        )
-    )
-    result = await db.execute(stmt)
-    return result.scalar()
+    async def accept_friendship_request(self, friendship_id: int) -> Friendship:
+        friendship = await self.repo.get_friendship(friendship_id)
+        if friendship is None:
+            raise FriendshipNotFound()
+        return await self.repo.accept_request(friendship)
 
+    async def reject_friendship_request(self, friendship_id: int) -> Friendship:
+        friendship = await self.repo.get_friendship(friendship_id)
+        if friendship is None:
+            raise FriendshipNotFound()
+        return await self.repo.reject_request(friendship)
 
-async def send_friendship(db: AsyncSession, data: FriendshipCreate, user_id: int):
-    addressee = await get_user(db, data.addressee_id)
-    if addressee is None:
-        raise UserNotFound()
+    async def get_friendship_requests(self, user_id: int) -> Sequence[Friendship]:
+        return await self.repo.get_requests(user_id)
 
-    if await friendship_exists(db, user_id, data.addressee_id):
-        raise FriendshipAlreadyExists()
-
-    friendship = Friendship(
-        requester_id = user_id,
-        addressee_id = data.addressee_id,
-        status = data.status
-    )
-
-    db.add(friendship)
-    await db.commit()
-    await db.refresh(friendship)
-    return friendship
-
-
-async def accept_friendship_request(db: AsyncSession, friendship_id: int, data: FriendshipUpdate):
-    friendship = await get_friendship(db, friendship_id)
-
-    if data.status is not None:
-        friendship.status = FriendStatus.accepted
-
-    await db.commit()
-    await db.refresh(friendship)
-    return friendship
-
-
-async def reject_friendship_request(db: AsyncSession, friendship_id: int, data: FriendshipUpdate):
-    friendship = await get_friendship(db, friendship_id)
-
-    if data.status is not None:
-        friendship.status = FriendStatus.rejected
-
-    await db.commit()
-    await db.refresh(friendship)
-    return friendship
-
-
-async def get_friendship_requests(db: AsyncSession, user_id: int):
-    stmt = select(Friendship).where(and_(Friendship.addressee_id == user_id, Friendship.status == FriendStatus.pending))
-    result = await db.execute(stmt)
-    return result.scalars().all()
-
-
-async def delete_friendship(db: AsyncSession, friend_id: int, user_id: int):
-    stmt = select(Friendship).filter(or_(
-            and_(Friendship.addressee_id == friend_id, Friendship.requester_id == user_id),
-            and_(Friendship.addressee_id == user_id, Friendship.requester_id == friend_id)
-        ),
-        Friendship.status == FriendStatus.accepted
-    )
-
-    result = await db.execute(stmt)
-    friendship = result.scalars().first()
-
-    if not friendship:
-        raise FriendshipNotFound()
-    await db.delete(friendship)
-    await db.commit()
-
-    return True
+    async def delete_friendship(self, user_id: int, friend_id: int) -> bool:
+        is_deleted = await self.repo.delete_friendship(user_id, friend_id)
+        if not is_deleted:
+            raise FriendshipNotFound()
+        return is_deleted
