@@ -3,7 +3,7 @@ from email.message import EmailMessage
 import aiosmtplib
 
 from app.models import User
-from app.core.config import ADMIN_GMAIL, APP_PASSWORD
+from app.core import ADMIN_GMAIL, APP_PASSWORD
 
 async def send_email(recipient: str, subject: str, body: str):
     admin_email = ADMIN_GMAIL

@@ -39,7 +39,9 @@ class TokenRepository:
             expires_at = datetime.now(timezone.utc) + timedelta(days=14)
         )
 
+        self.db.add(new_token)
         await self.db.commit()
+        await self.db.refresh(new_token)
         return new_token
 
     async def delete_token(self, token_hash: str):

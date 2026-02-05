@@ -3,7 +3,7 @@ from typing import Sequence
 from app.core.security import hash_password, verify_password
 from app.models import User
 from app.schemas import UserCreate
-from app.exceptions.user import UserNotFound, UserAlreadyExists
+from app.exceptions import UserNotFound, UserAlreadyExists
 from app.repositories import UserRepository
 
 

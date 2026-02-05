@@ -5,6 +5,7 @@ from app.dependencies import get_current_user, get_comment_service
 from app.models import User
 from app.services import CommentService
 
+
 router = APIRouter(prefix="/comments", tags=["Comments"])
 
 @router.get("/delete")

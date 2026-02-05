@@ -1,13 +1,15 @@
 from typing import Sequence
 
-from app.exceptions.friendship import FriendshipAlreadyExists
 from app.models import Friendship
 from app.schemas import (
     FriendshipCreate,
     FriendResponse
 )
-from app.exceptions.user import UserNotFound
-from app.exceptions.friendship import FriendshipNotFound
+from app.exceptions import (
+    UserNotFound,
+    FriendshipAlreadyExists,
+    FriendshipNotFound
+)
 from app.repositories import FriendshipRepository, UserRepository
 
 

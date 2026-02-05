@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from fastapi import Request
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,18 +11,20 @@ from app.schemas import PostPagination
 from app.models import User
 from app.db.database import AsyncSessionLocal
 from app.exceptions.auth import InvalidCredentials
-from app.services.token_service import get_token_from_header_or_cookie
 from app.services import (
     UserService,
     PostService,
     CommentService,
-    LikeService
+    LikeService,
+    FriendshipService,
+    TokenService
 )
 from app.repositories import (
     UserRepository,
     PostRepository,
     CommentRepository,
-    LikeRepository
+    LikeRepository,
+    FriendshipRepository, TokenRepository
 )
 
 
@@ -69,6 +72,29 @@ def get_like_service(
     post_repo: PostRepository = Depends(get_post_repository)
 ) -> LikeService:
     return LikeService(like_repo, post_repo)
+
+
+def get_friendship_service(
+    db: AsyncSession = Depends(get_db),
+    user_repo: UserRepository = Depends(get_user_repository)
+) -> FriendshipService:
+    return FriendshipService(FriendshipRepository(db), user_repo)
+
+
+def get_token_service(db: AsyncSession = Depends(get_db)) -> TokenService:
+    return TokenService(TokenRepository(db))
+
+
+async def get_token_from_header_or_cookie(request: Request) -> str:
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header[7:]
+
+    cookie_token = request.cookies.get("access_token")
+    if cookie_token:
+        return cookie_token
+
+    raise InvalidCredentials()
 
 
 async def get_current_user(

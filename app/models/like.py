@@ -1,7 +1,9 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.db.database import Base
-from sqlalchemy import ForeignKey, func, UniqueConstraint
 import datetime
+
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey, func, UniqueConstraint
+
+from app.db import Base
 
 
 class Like(Base):

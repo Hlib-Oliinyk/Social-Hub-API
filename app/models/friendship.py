@@ -1,9 +1,11 @@
 import datetime
+
 from enum import Enum
 from sqlalchemy import Enum as SAEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from app.db.database import Base
+
+from app.db import Base
 
 
 class FriendStatus(str, Enum):
