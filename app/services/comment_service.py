@@ -37,6 +37,9 @@ class CommentService:
 
     async def delete_comment(self, comment_id: int, user_id: int) -> bool:
         comment = await self.repo.get_by_id(comment_id)
+        if comment is None:
+            raise CommentNotFound()
+
         if comment.user_id != user_id:
             raise CommentForbidden()
 
