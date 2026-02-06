@@ -25,7 +25,7 @@ class HTTPLoggerMiddleware(BaseHTTPMiddleware):
         process_time = time.time() - start_time
         if process_time > 1.0:
             logger.warning(
-                f"Slow request {request.method} {request.url.path}: {process_time:.2f}s"
+                f"[{request_id}] Slow request {request.method} {request.url.path}: {process_time:.2f}s"
             )
 
         log_message = (
