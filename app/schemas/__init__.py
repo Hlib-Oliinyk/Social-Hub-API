@@ -8,7 +8,6 @@ from .friendship import (
 from .like import LikeResponse
 from .post import (
     PostCreate,
-    PostResponse,
     PostPagination,
     PostRead
 )
@@ -27,7 +26,6 @@ __all__ = [
     "FriendshipCreate",
     "FriendResponse",
     "LikeResponse",
-    "PostResponse",
     "PostCreate",
     "PostPagination",
     "PostRead",
