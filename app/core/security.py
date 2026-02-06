@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 import secrets
 
-from app.core.config import ALGORITHM, SECRET_KEY
+from app.core import ALGORITHM, SECRET_KEY
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

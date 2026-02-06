@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+
+import logging
+
 from app.api.v1 import *
 from app.exceptions_handler import setup_exception_handler
 from app.middleware import HTTPLoggerMiddleware
@@ -6,6 +9,8 @@ from app.middleware import HTTPLoggerMiddleware
 app = FastAPI(
     docs_url="/api/docs"
 )
+
+logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 
 app.include_router(auth_router)
 app.include_router(users_router)
