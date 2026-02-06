@@ -7,11 +7,11 @@ from app.dependencies import (
     get_like_service
 )
 from app.schemas import (
-    PostResponse,
+    PostRead,
     PostCreate,
     CommentResponse,
     CommentCreate,
-    LikeResponse
+    LikeResponse,
 )
 from app.dependencies import PaginationDep, get_post_service
 from app.models import User
@@ -24,7 +24,7 @@ from app.services import (
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
-@router.get("", response_model=list[PostResponse])
+@router.get("", response_model=list[PostRead])
 async def get_posts(
     pagination: PaginationDep,
     service: PostService = Depends(get_post_service)
@@ -32,7 +32,7 @@ async def get_posts(
     return await service.get_posts(pagination)
 
 
-@router.get("/{post_id}", response_model=PostResponse)
+@router.get("/{post_id}", response_model=PostRead)
 async def get_post(
     post_id: int,
     service: PostService = Depends(get_post_service)

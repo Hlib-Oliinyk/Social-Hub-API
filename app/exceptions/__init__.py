@@ -16,5 +16,5 @@ __all__ = [
     "PostNotFound",
     "CommentForbidden",
     "CommentNotFound",
-    "LikeNotFound",
+    "LikeNotFound"
 ]

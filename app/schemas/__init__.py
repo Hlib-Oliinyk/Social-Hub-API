@@ -9,7 +9,8 @@ from .like import LikeResponse
 from .post import (
     PostCreate,
     PostResponse,
-    PostPagination
+    PostPagination,
+    PostRead
 )
 from .token import Token
 from .user import (
@@ -29,6 +30,7 @@ __all__ = [
     "PostResponse",
     "PostCreate",
     "PostPagination",
+    "PostRead",
     "Token",
     "UserLogin",
     "UserResponse",

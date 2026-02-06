@@ -8,8 +8,18 @@ class PostCreate(BaseModel):
 
 class PostResponse(BaseModel):
     id: int
-    user_id: int
+    user_id: str
     content: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PostRead(BaseModel):
+    id: int
+    username: str
+    content: str
+    likes_count: int
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

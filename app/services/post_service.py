@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from sqlalchemy import RowMapping
+
 from app.models import Post
 from app.exceptions_handler import PostNotFound, PostForbidden
 from app.schemas import PostCreate
@@ -16,7 +18,7 @@ class PostService:
             raise PostNotFound()
         return post
 
-    async def get_posts(self, pagination) -> Sequence[Post]:
+    async def get_posts(self, pagination) -> Sequence[RowMapping]:
         return await self.repo.get_posts(
             pagination.limit,
             pagination.offset
@@ -31,4 +33,4 @@ class PostService:
         post = await self.get_post(post_id)
         if post.user_id != user_id:
             raise PostForbidden()
-        return await self.repo.delete_post(post)
+        return await self.repo.delete_post(post.id)
