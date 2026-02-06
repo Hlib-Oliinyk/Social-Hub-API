@@ -170,13 +170,48 @@ ReDoc: http://localhost:8000/redoc
 
 ---
 
-## Key Endpoints:
+## Endpoints:
+
+### Authentication
 ```
-POST /api/v1/auth/register     # User registration
-POST /api/v1/auth/login        # User login
-POST /api/v1/auth/refresh      # Token refresh
-POST /api/v1/auth/logout       # User logout
-GET  /api/v1/users/me          # Get current user
+POST /auth/register     # User registration
+POST /auth/login        # User login
+POST /auth/refresh      # Token refresh
+POST /auth/logout       # User logout
+```
+
+### User
+```
+GET  /users/me          # Get current user
+GET  /users/{user_id}   # Get user by ID
+DELETE /users/me        # Delete current account
+```
+
+### Post
+```
+GET    /posts           # Get all posts (paginated)
+GET    /posts/{id}      # Get specific post
+POST   /posts           # Create new post
+DELETE /posts/{id}      # Delete own post
+```
+
+### Comment & Like
+```
+GET    /posts/{id}/comments  # Get post comments
+POST   /posts/{id}/comments  # Add comment
+GET    /comments/delete      # Delete comment
+POST   /posts/{id}/like      # Like a post
+DELETE /posts/{id}/like      # Remove like
+```
+
+### Friendship
+```
+GET    /friends              # List all friends
+GET    /friends/requests     # List friend requests
+POST   /friends/{user_id}    # Send friend request
+POST   /friends/{id}/accept  # Accept request
+POST   /friends/{id}/reject  # Reject request
+DELETE /friends/{user_id}    # Remove friend
 ```
 
 ---
