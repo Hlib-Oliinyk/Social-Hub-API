@@ -93,7 +93,7 @@ Social Hub API is a backend application for a social platform, built with **Fast
 
 ### 1. Clone & Setup
 ```
-git clone <your-repo>
+git clone https://github.com/Hlib-Oliinyk/Social-Hub-API
 cp .env.example .env
 ```
 
